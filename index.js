@@ -1,6 +1,37 @@
-var express = require('express');
 var mongodb = require('mongodb');
+var mqtt = require('mqtt');
+var express = require('express');
+
 var app = express();
+
+//funcion to manager mqtt
+function HelperMQTT() {
+  
+    this.url = 'mqtt://localhost';//this url of mosquitto
+    this.client = null;
+  
+    this.getClient = function () {
+      if(!this.client)  
+         this.client = mqtt.connect(this.url);
+       return this.client;
+    };
+    
+    this.connect = function () {
+        var client = this.getClient();
+        client.on('connect', function () {
+            client.subscribe('debug');
+            //client.publish('debug', 'Hello mqtt');
+        });
+    };
+    this.observer = function (db) {
+        var client = this.getClient();
+        client.on('message', function (topic, message) {
+            // message is Buffer
+            console.log(message.toString());
+           // client.end();
+        });
+    };
+}
 
 //funcion to manager db
 function HelperDB() {
@@ -20,24 +51,19 @@ function HelperDB() {
 
 //instance db
 var environmentalDB = new HelperDB();
+//instance mqtt
+var environmentalMQTT = new HelperMQTT();
 
 /**
  * Routing to register visitors
  */
 app.get('/', function (req, res) {
+    
+    environmentalMQTT.connect();//conect with topic
     environmentalDB.connect(function (response) {
         if (response.success) {
-            var collection = response.db.collection('visitor');
-            collection.insert({"visitor": 1}, function (err, result) {
-                if (err) { //exists error
-                    res.send("Error en la coleccion visitor");
-                } else {
-                    res.send("Visitor OK"); //visitor ok
-                }
-                console.log('Resultado :', result);
-                response.db.close(); //close db 
-            });
-
+            environmentalMQTT.observer(response.db);
+            res.send("Revisar consola!!");
         } else { //exists problems in conection form helperDB
             res.send("Error en la conexion a la DB");
         }
@@ -45,30 +71,7 @@ app.get('/', function (req, res) {
 });
 
 
-/**
- * Query visitors number total
- */
-app.get('/visitors', function (req, res) {
-    environmentalDB.connect(function (response) {
-        if (response.success) {
-            var collection = response.db.collection('visitor');
-            collection.find().toArray(function (err, result) {
-                if (err) {//exists error
-                    res.send("Error en la coleccion visitor");
-                } else {
-                    res.send("Result OK Total: "+result.length+"");
-                }
-                console.log('Resultado :', result);
-                response.db.close();//close db 
-            });
-
-        } else {//exists problems in conection form helperDB
-            res.send("Error en la conexion a la DB");
-        }
-    });
-});
-
-app.listen(3000, function () { //listener
-    console.log('Example app listening on port 3000!');
+app.listen(3300, function () { //listener
+    console.log('Example app listening on port 3300!');
 });
 
