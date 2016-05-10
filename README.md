@@ -5,7 +5,5 @@ El Proyecto captura los datos por medio del protocolo MQTT, utilizando un Server
 Se debe ejecutar  el siguiente comando.
 $ npm install
 
-En esta versión se realiza un test de conectividad con la base de datos mongodb, para el ejemplo se realiza un insert de visitantes y luego lo consulta. El proyecto está basado en los siguientes routing:
-
--	GET / realiza el registros.
--	GET /visitors Consulta el número de visitas. 
+En esta versión se realiza un test de conectividad para el Borker MQTT, se utiliza el topic debug como suscritor y por medio de un publicado se envía los datos y se visualiza en consola los datos enviados. 
+-	GET / para iniciar el observador
