@@ -1,0 +1,15 @@
+{
+  "name": "server-side-ambiental",
+  "version": "0.0.1",
+  "description": "servidor de datos y cliente de mqtt",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Raul A. Alzate",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "express": "~4.13.4",
+    "mongodb": "~2.1.18"
+  }
+}
