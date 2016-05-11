@@ -1,8 +1,13 @@
 var mongodb = require('mongodb');
 var mqtt = require('mqtt');
 var express = require('express');
-
 var app = express();
+
+app.set('views', __dirname + '/tpl');
+app.set('view engine', "jade");
+app.engine('jade', require('jade').__express);
+app.use(express.static(__dirname + '/public'));
+
 
 //funcion to manager mqtt
 function HelperMQTT() {
@@ -23,13 +28,9 @@ function HelperMQTT() {
             //client.publish('debug', 'Hello mqtt');
         });
     };
-    this.observer = function (db) {
+    this.observer = function (callback) {
         var client = this.getClient();
-        client.on('message', function (topic, message) {
-            // message is Buffer
-            console.log(message.toString());
-           // client.end();
-        });
+        client.on('message', callback);
     };
 }
 
@@ -49,29 +50,38 @@ function HelperDB() {
     };
 }
 
+
 //instance db
-var environmentalDB = new HelperDB();
+var environmentalDB   = new HelperDB();
 //instance mqtt
 var environmentalMQTT = new HelperMQTT();
 
 /**
- * Routing to register visitors
+ * Routing to consoler client MQTT
  */
 app.get('/', function (req, res) {
-    
-    environmentalMQTT.connect();//conect with topic
-    environmentalDB.connect(function (response) {
-        if (response.success) {
-            environmentalMQTT.observer(response.db);
-            res.send("Revisar consola!!");
-        } else { //exists problems in conection form helperDB
-            res.send("Error en la conexion a la DB");
-        }
+    res.render("page");
+
+    io.sockets.on('connection', function (socket) {
+        environmentalMQTT.connect();//conect with topic
+        environmentalDB.connect(function (response) {
+            if (response.success) {
+                environmentalMQTT.observer(function (topic, message) {
+                    console.log(message.toString());
+                     socket.emit('message', { message: message.toString() });
+                });//observer
+                
+            } else { //exists problems in conection form helperDB
+                console.log('Error helperDB!');
+            }
+        });//environmentalDB
+
     });
+
 });
 
-
-app.listen(3300, function () { //listener
+//io Socket
+var io = require('socket.io').listen(app.listen(3300, function () { //listener
     console.log('Example app listening on port 3300!');
-});
+}));
 
