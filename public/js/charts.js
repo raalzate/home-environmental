@@ -27,7 +27,7 @@ window.onload = function() {
 
 
       var lineCoreOptions = {
-          title: 'Company Performance',
+          title: 'Censo en tiempo real',
           curveType: 'function',
           legend: { position: 'bottom' }
       };
@@ -66,18 +66,17 @@ window.onload = function() {
 
         var rowLineCore = [new Date()];
         var index = 0; 
-            
-        for(var i in dataTableGauge) {
-          if(emit.name == dataTableGauge[i][0]) {
-            index = i - 1;
-          }
 
-          if(i > 0) {
-            rowLineCore.push(parseFloat(emit.valueSensor));
-          }
-          
+        for(var i = 1; i < dataTableGauge.length; i++) {
+          if(emit.name == dataTableGauge[i][0]) {
+              rowLineCore.push(parseFloat(emit.valueSensor));
+              index = i - 1;
+          } else  {
+              old = parseFloat(dataGauge.getValue(i - 1, 1));
+              rowLineCore.push(old);
+          }  
         }
-        console.log(rowLineCore);
+
         dataLineCore.addRow(rowLineCore);
         dataGauge.setValue(index, 1, parseFloat(emit.valueSensor));
 

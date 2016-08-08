@@ -9,11 +9,12 @@
   "author": "Raul A. Alzate",
   "license": "BSD-2-Clause",
   "dependencies": {
+    "body-parser": "^1.5.1",
     "express": "~4.13.4",
     "jade": "^1.11.0",
+    "jade-bootstrap": "^1.0.6",
     "mongodb": "~2.1.18",
     "mqtt": "~1.10.0",
-    "socket.io": "^1.4.6",
-     "body-parser": "^1.5.1"
+    "socket.io": "^1.4.6"
   }
 }

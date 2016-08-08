@@ -1,9 +1,15 @@
-html
-    head
-        title= "Chart - Home Environmental"
-        script(src='https://www.gstatic.com/charts/loader.js')
-        script(src='/socket.io/socket.io.js')
-        script(src='/js/charts.js')
-    body
-        #chartGauge_div
-        #chartLineCore_div
+extends ../node_modules/jade-bootstrap/_bootstrap
+
+block styles	
+    link(href='/css/style.css', rel='stylesheet')
+
+block body
+    div.container
+      h1.center  Sistema IoT Ambiental
+      div.center(id="chartGauge_div")
+      div(id="chartLineCore_div")
+
+block scripts
+    script(src="https://www.gstatic.com/charts/loader.js")
+    script(src='/socket.io/socket.io.js')
+    script(src='/js/charts.js')

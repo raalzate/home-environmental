@@ -27,53 +27,76 @@ environmentalMQTT.connect(function(clientMQTT){
   environmentalDB.connect(function (resDB) {
         if (resDB.success) {
            var sensor = resDB.db.collection('sensorRegister');
+
            sensor.find().toArray(function(err, result){
                 if(!err) {
                   for(index in result) {
                     console.log("subscribe "+result[index].name.toLowerCase());
                     clientMQTT.subscribe(result[index].name.toLowerCase());
                   }
+                  observerEnvironmental(clientMQTT, resDB);
                 }
            });
-
-
-           environmentalMQTT.observer(function (topic, value) {
-
-                  var sensorRegister = resDB.db.collection('sensorRegister');
-
-                  if(topic == "register") {
-                    console.log("register "+value.toString());
-                    var dataInto = {
-                        name:value.toString(), 
-                        intoDate:new Date()
-                    };
-                    sensorRegister.insert(dataInto, function(err, result){
-                        if(!err) clientMQTT.subscribe(value.toString().toLowerCase());
-                    }); 
-
-                    if(globalSocket != null) {
-                      sensorRegister.find().toArray(function(err, result){
-                          if(!err) globalSocket.emit('setSensor', result);
-                      });
-                    }
-                  } else if(globalSocket != null){
-                     console.log("sensor "+value.toString());
-                     var sensor = resDB.db.collection('sensor');
-                     var dataInto = {
-                        name:topic.toString().toLowerCase(), 
-                        intoDate:new Date(), 
-                        valueSensor:value.toString()
-                     };
-                     globalSocket.emit('pushSensor', dataInto);
-                     sensor.insert(dataInto, function(err, result){}); 
-                  }                          
-            });//observer
+         
         } else { 
             console.log('Error helperDB!');
             res.status(500).jsonp({'error':'Internal Error'});
         }
     });
 });
+
+function observerEnvironmental(clientMQTT, resDB){
+    environmentalMQTT.observer(function (topic, value) {
+
+            //get collection
+            var sensorRegister = resDB.db.collection('sensorRegister');
+            var sensor         = resDB.db.collection('sensor');
+
+            if(topic == "register") {//is register
+
+                var dataInto = {
+                    name:value.toString(), 
+                    intoDate:new Date()
+                };
+
+                sensorRegister.insert(dataInto, function(err, result){
+                    if(!err) clientMQTT.subscribe(value.toString().toLowerCase());
+                }); 
+
+                notifyRegister(sensorRegister);
+
+            } else {//is node
+
+                var dataInto = {
+                  name:topic.toString().toLowerCase(), 
+                  intoDate:new Date(), 
+                  valueSensor:value.toString()
+                };
+                     
+                notifySensor(dataInto);
+
+                sensor.insert(dataInto, function(err, result){}); 
+          }                          
+    });//observer
+}
+
+function notifySensor(dataInto){
+  if(globalSocket != null) {
+    globalSocket.emit('pushSensor', dataInto);
+    console.log("sensor ", dataInto);
+  }
+}
+
+function notifyRegister(sensorRegister){
+  if(globalSocket != null) {
+    sensorRegister.find().toArray(function(err, result){
+        if(!err) {
+          globalSocket.emit('setSensor', result);
+          console.log("register ", result);
+        }
+    });
+  }
+}
 
 app.get('/', function (req, res) {
     res.render("page");
@@ -87,10 +110,8 @@ app.get('/charts', function(req, res){
                 
                 globalSocket = socket;//set global socket
 
-                var sensor = resDB.db.collection('sensorRegister');
-                sensor.find().toArray(function(err, result){
-                    if(!err) socket.emit('setSensor', result);
-                });
+                var sensorRegister = resDB.db.collection('sensorRegister');
+                notifyRegister(sensorRegister);
                 
             } else { //exists problems in conection form helperDB
                 console.log('Error helperDB!');
