@@ -60,11 +60,13 @@ function observerEnvironmental(clientMQTT, resDB){
                 };
 
                 sensorRegister.insert(dataInto, function(err, result){
-                    if(!err) clientMQTT.subscribe(value.toString().toLowerCase());
+                    if(!err) {
+
+                      clientMQTT.subscribe(value.toString().toLowerCase());
+                      notifyRegister(sensorRegister);
+
+                    }
                 }); 
-
-                notifyRegister(sensorRegister);
-
             } else {//is node
 
                 var dataInto = {
@@ -73,9 +75,12 @@ function observerEnvironmental(clientMQTT, resDB){
                   valueSensor:value.toString()
                 };
                      
-                notifySensor(dataInto);
-
-                sensor.insert(dataInto, function(err, result){}); 
+      
+                sensor.insert(dataInto, function(err, result){
+                    if(!err) {
+                      notifySensor(dataInto);
+                    }
+                }); 
           }                          
     });//observer
 }
