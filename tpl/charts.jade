@@ -1,6 +1,6 @@
 extends ../node_modules/jade-bootstrap/_bootstrap
 
-block styles	
+append styles	
     link(href='/css/style.css', rel='stylesheet')
 
 block body
@@ -9,7 +9,7 @@ block body
       div.center(id="chartGauge_div")
       div(id="chartLineCore_div")
 
-block scripts
+append scripts
     script(src="https://www.gstatic.com/charts/loader.js")
     script(src='/socket.io/socket.io.js')
     script(src='/js/charts.js')
