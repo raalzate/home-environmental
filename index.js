@@ -128,7 +128,7 @@ app.get('/charts', function(req, res){
         });//environmentalDB
 
     });
-    io.socket.on("disconnect", function(socket) {
+    io.sockets.on("disconnect", function(socket) {
         delete globalSocket[socket.id];
     });
 });
