@@ -6,7 +6,7 @@ var helperMQTT     = require('./lib/helperMQTT');
 var onMessageMQTT  = require('./lib/onMessageMQTT');
 
 var app = express();
-var globalSocket = null;
+var globalSocket = {};
 
 
 var environmentalDB   = new helperDB();
@@ -86,18 +86,22 @@ function observerEnvironmental(clientMQTT, resDB){
 }
 
 function notifySensor(dataInto){
-  if(globalSocket != null) {
-    globalSocket.emit('pushSensor', dataInto);
-    console.log("sensor ", dataInto);
+  if(globalSocket.length > 0) {
+    globalSocket.forEach(function(socket){
+        socket.emit('pushSensor', dataInto);
+        console.log("sensor ", dataInto);
+    });
   }
 }
 
 function notifyRegister(sensorRegister){
-  if(globalSocket != null) {
+  if(globalSocket.length > 0) {
     sensorRegister.find().toArray(function(err, result){
         if(!err) {
-          globalSocket.emit('setSensor', result);
-          console.log("register ", result);
+          globalSocket.forEach(function(socket){
+              socket.emit('setSensor', result);
+              console.log("register ", result);
+          });
         }
     });
   }
@@ -113,7 +117,7 @@ app.get('/charts', function(req, res){
         environmentalDB.connect(function (resDB) {
             if (resDB.success) {
                 
-                globalSocket = socket;//set global socket
+                globalSocket[socket.id] = socket;//set global socket
 
                 var sensorRegister = resDB.db.collection('sensorRegister');
                 notifyRegister(sensorRegister);
@@ -123,6 +127,9 @@ app.get('/charts', function(req, res){
             }
         });//environmentalDB
 
+    });
+    io.socket.on("disconnect", function(socket) {
+        delete globalSocket[socket.id];
     });
 });
 
