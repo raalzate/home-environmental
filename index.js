@@ -87,21 +87,22 @@ function observerEnvironmental(clientMQTT, resDB){
 
 function notifySensor(dataInto){
   if(Object.keys(globalSocket).length > 0) {
-    globalSocket.forEach(function(socket){
-        socket.emit('pushSensor', dataInto);
-        console.log("sensor ", dataInto);
-    });
+    for (var id in globalSocket) { 
+       globalSocket[id].emit('pushSensor', dataInto);
+       console.log("pushSensor ", dataInto);
+    }
   }
 }
 
 function notifyRegister(sensorRegister){
+
   if(Object.keys(globalSocket).length > 0) {
     sensorRegister.find().toArray(function(err, result){
         if(!err) {
-          globalSocket.forEach(function(socket){
-              socket.emit('setSensor', result);
+          for (var id in globalSocket) { 
+              globalSocket[id].emit('setSensor', result);
               console.log("register ", result);
-          });
+          }
         }
     });
   }
