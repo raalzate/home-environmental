@@ -2,31 +2,21 @@ extends ../node_modules/jade-bootstrap/layouts/cover
 
 append styles	
     link(href='/css/style.css', rel='stylesheet')
-    link(href="../css/cover.css", rel="stylesheet")
 
 block body
-	.site-wrapper
-		.site-wrapper-inner
-			.cover-container
-				.masthead.clearfix
-					.inner
-						h3.masthead-brand Cover
-						nav
-							ul.nav.masthead-nav
-								li.active 
-									a(href="#") Home
-								li
-									a(href="#") Features
-								li
-									a(href="#") Contact
-				.inner.cover
-					h1.cover-heading Sistema IoT Ambiental
-					div.center(id="chartGauge_div")
-     				div(id="chartLineCore_div")
-
-				.mastfoot
-					.inner
-						p Cover template for <a href="http://getbootstrap.com">Bootstrap </a>, by <a href="https://twitter.com/mdo">@mdo</a>.
+  .site-wrapper
+    .site-wrapper-inner
+      .cover-container
+        .masthead.clearfix
+          .inner
+            h3.masthead-brand Sistema IoT Ambiental - Proyecto de Grado
+        .inner.cover
+          h1.cover-heading Sensores Ambientales
+          div(id="chartGauge_div")
+          div(id="chartLineCore_div")
+        .mastfoot
+          .inner
+            p Trabajo de Tesis para la <a href="https://www.unad.edu.co/">Universidad Nacional Abierta y a Distancia (UNAD) </a>, Programa de Ingeniería en Electrónica, 2016.
 
 append scripts
     script(src="https://www.gstatic.com/charts/loader.js")
