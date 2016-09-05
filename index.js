@@ -86,7 +86,7 @@ function observerEnvironmental(clientMQTT, resDB){
 }
 
 function notifySensor(dataInto){
-  if(globalSocket.length > 0) {
+  if(Object.keys(globalSocket).length > 0) {
     globalSocket.forEach(function(socket){
         socket.emit('pushSensor', dataInto);
         console.log("sensor ", dataInto);
@@ -95,7 +95,7 @@ function notifySensor(dataInto){
 }
 
 function notifyRegister(sensorRegister){
-  if(globalSocket.length > 0) {
+  if(Object.keys(globalSocket).length > 0) {
     sensorRegister.find().toArray(function(err, result){
         if(!err) {
           globalSocket.forEach(function(socket){
