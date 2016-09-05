@@ -1,13 +1,19 @@
-extends ../node_modules/jade-bootstrap/_bootstrap
+extends ../node_modules/jade-bootstrap/layouts/cover
 
 append styles	
     link(href='/css/style.css', rel='stylesheet')
+    link(href="../css/cover.css", rel="stylesheet")
+
 
 block body
-    div.container
-      h1.center  Sistema IoT Ambiental
-      div.center(id="chartGauge_div")
-      div(id="chartLineCore_div")
+	.site-wrapper
+		.site-wrapper-inner
+			.inner.cover
+				.masthead.clearfix
+				    div.container
+				      h1.center  Sistema IoT Ambiental
+				      div.center(id="chartGauge_div")
+				      div(id="chartLineCore_div")
 
 append scripts
     script(src="https://www.gstatic.com/charts/loader.js")
