@@ -4,7 +4,7 @@ window.onload = function() {
     var socket = io.connect('http://'+document.domain+':3300');
     var content = document.getElementById("content");
 
-    socket.on('message', function (data) {
+    socket.on('pushSensor', function (data) {
         if(data.message) {
             messages.push(data.message);
             var html = '';
