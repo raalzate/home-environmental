@@ -3,7 +3,7 @@ window.onload = function() {
     google.charts.load('current', {
         'packages': ['gauge', 'corechart']
     });
-    google.charts.setOnLoadCallback(drawChart);
+    google.charts.setOnLoadCallback(initAllCharts);
 
     var dataGauge = [];
     var dataLineCore = [];
@@ -35,8 +35,8 @@ window.onload = function() {
     gaugeOptions['humedad'] = {
         label: "Humedad",
         options: {
-            width: 600,
-            height: 220,
+            width: 620,
+            height: 230,
             redFrom: 90,
             redTo: 100,
             yellowFrom: 75,
@@ -59,6 +59,7 @@ window.onload = function() {
     };
 
 
+    //esta funcion se encarga de inicializar los datos y los widget
     function setDataRegisters(objectRegister) {
 
         var nameNode = objectRegister.name;
@@ -76,7 +77,8 @@ window.onload = function() {
 
             header.push("Date");
             body.push(new Date());
-
+            console.debug("sensores obtenidos del registro -> ");
+            console.debug(objectRegister.sensors);
             for (indexSensor in objectRegister.sensors) {
                 var nameSensor = objectRegister.sensors[indexSensor];
                 var gDiv = createGaugeDiv(nameNode, nameSensor);
@@ -120,7 +122,7 @@ window.onload = function() {
 
                 lineCore.draw(data, lineCoreOptions);
             }
-        }
+        }  
 
 
     }
@@ -128,31 +130,33 @@ window.onload = function() {
     function pushData(emit) {
         var rowLineCore = [new Date()];
 
-        var node = emit.name;
-        var sensors = emit.data;
+        var node = emit.node;
+        var sensor = emit.name;
         var nodeGauge = dataGauge[node];
+        
         console.debug("**** Pindando datos para el nodo '" + node + "' ****");
-        console.log(emit);
+
         for (var i in nodeGauge) {
-            for (var j in sensors) {
-                if (sensors[j].hasOwnProperty(nodeGauge[i].nameSensor)) {
-                    var nameSensor = nodeGauge[i].nameSensor;
-                    var value = parseFloat(sensors[j][nameSensor]);
+            if (sensor == nodeGauge[i].nameSensor) {
+                var nameSensor = nodeGauge[i].nameSensor;
+                var value = parseFloat(emit.data);
 
-                    console.debug("Pintar '" + nameSensor + "' con el valor: " + parseFloat(sensors[j][nameSensor]));
-                    nodeGauge[i].data.setValue(0, 1, value);
-                    nodeGauge[i].gauge.draw(nodeGauge[i].data, gaugeOptions[nameSensor].options);
+                console.debug("Pintar '" + nameSensor + "' con el valor: " + value);
+                nodeGauge[i].data.setValue(0, 1, value);
+                nodeGauge[i].gauge.draw(nodeGauge[i].data, gaugeOptions[nameSensor].options);
 
-                    rowLineCore.push(value);
-                }
+                rowLineCore.push(value);
+            } else {
+                rowLineCore.push(nodeGauge[i].data.getValue(0,1));
             }
+         
         }
         console.log(dataLineCore);
         dataLineCore[node].data.addRow(rowLineCore);
         dataLineCore[node].lineCore.draw(dataLineCore[node].data, lineCoreOptions);
     }
 
-    function drawChart() {
+    function initAllCharts() {
         var socket = io.connect('http://' + document.domain + ':3300');
         socket.on('setDataRegisters', setDataRegisters);
         socket.on('pushData', pushData);
