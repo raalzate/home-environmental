@@ -171,21 +171,16 @@ app.get('/charts', function(req, res) {
     notifyAllRegister();
 });
 
-app.get('/rest/sensors', function(req, res) {
-    /*repository.connect(function(response) {
-        if (response.success) {
-            var sensor = response.db.collection('sensorRegister');
-            sensor.find().toArray(function(err, result) {
-                if (err) res.send(500, err.message);
-                else res.status(200).jsonp(result);
-            });
-        } else { //exists problems in conection form helperDB
-            console.log('Error helperDB!');
-            res.status(500).jsonp({
-                'error': 'Internal Error'
-            });
-        }
-    });*/
+app.get('/charts/:node', function(req, res) {
+    res.render("charts-node");
+});
+
+app.get('/rest/data/:nodo', function(req, res) {
+    console.log(req.params.nodo);
+   repository.getDataSensors(req.params.nodo, function(err, result){
+        if (err) res.send(500, err.message);
+        else res.status(200).jsonp(result);
+    });
 });
 
 //io Socket

@@ -59,6 +59,8 @@ window.onload = function() {
     };
 
 
+
+
     //esta funcion se encarga de inicializar los datos y los widget
     function setDataRegisters(objectRegister) {
 
@@ -194,7 +196,12 @@ window.onload = function() {
             var title = document.createElement('h2');
             title.id = "title-" + node;
             title.className = 'page-header col-sm-12';
-            title.appendChild(document.createTextNode("NODO: " + node));
+
+            var link = document.createElement('span');
+            var textNode = "<a href='/charts/"+node+"' title='Ver datos de este nodo'>NODO: " + node+"</a>";
+            link.innerHTML = textNode;
+            title.appendChild(link);
+
             document.getElementById('charts').appendChild(title);
             return title;
         }
