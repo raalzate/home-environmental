@@ -5,7 +5,7 @@ window.onload = function() {
     });
     google.charts.setOnLoadCallback(initAllCharts);
 
-    var dataGauge = [];
+    var dataInfo = [];
     var dataLineCore = [];
     var gaugeOptions = [];
     var lineCoreOptions = {
@@ -15,51 +15,6 @@ window.onload = function() {
             position: 'bottom'
         }
     };
-
-    gaugeOptions['temperatura'] = {
-        label: "Temperatura",
-        options: {
-            width: 620,
-            height: 230,
-            min: -14,
-            max: 60,
-            redFrom: 34,
-            redTo: 60,
-            yellowFrom: 24,
-            yellowTo: 34,
-            minorTicks: 5,
-            majorTicks: ["__ Grados", "Frio", "Calido", "°C __"]
-        }
-    };
-
-    gaugeOptions['humedad'] = {
-        label: "Humedad",
-        options: {
-            width: 620,
-            height: 230,
-            redFrom: 90,
-            redTo: 100,
-            yellowFrom: 75,
-            yellowTo: 90,
-            minorTicks: 5
-        }
-    };
-
-    gaugeOptions['calidad'] = {
-        label: "Calidad Aire",
-        options: {
-            width: 600,
-            height: 220,
-            redFrom: 90,
-            redTo: 100,
-            yellowFrom: 75,
-            yellowTo: 90,
-            minorTicks: 5
-        }
-    };
-
-
-
 
     //esta funcion se encarga de inicializar los datos y los widget
     function setDataRegisters(objectRegister) {
@@ -71,8 +26,8 @@ window.onload = function() {
             dataTableLineCore = [];
 
             //inicializa el objecto para las graficas
-            dataGauge[nameNode] = [];
             dataLineCore[nameNode] = {};
+            dataInfo[nameNode] = [];
 
             var header = [];
             var body = [];
@@ -81,30 +36,26 @@ window.onload = function() {
             body.push(new Date());
             console.debug("sensores obtenidos del registro -> ");
             console.debug(objectRegister.sensors);
+
             for (indexSensor in objectRegister.sensors) {
                 var nameSensor = objectRegister.sensors[indexSensor];
-                var gDiv = createGaugeDiv(nameNode, nameSensor);
-
-                if (gDiv) {
+                var canvas = createCanvasDiv(nameNode, nameSensor);
+                if (canvas) {
                     console.debug("-- Sensor name -> " + nameSensor);
-                    var gauge = new google.visualization.Gauge(gDiv);
+                    header.push(nameSensor);
+                    body.push(0);
+                    setingValuesSensors(nameSensor, canvas.id, 0);
 
                     dataTableGauge = [];
                     dataTableGauge.push(['Label', 'Value']);
-                    dataTableGauge.push([gaugeOptions[nameSensor].label, 0]);
-
-                    header.push(nameSensor);
-                    body.push(0);
-
+                    dataTableGauge.push([nameSensor, 0]);
                     var data = google.visualization.arrayToDataTable(dataTableGauge);
-                    //agregar al guage los objectos  
-                    dataGauge[nameNode].push({
+
+                    dataInfo[nameNode].push({
                         nameSensor: nameSensor,
-                        data: data,
-                        gauge: gauge
+                        id: canvas.id,
+                        data: data
                     });
-                    //pinta el gauge
-                    gauge.draw(data, gaugeOptions[nameSensor].options);
                 }
             }
 
@@ -124,8 +75,30 @@ window.onload = function() {
 
                 lineCore.draw(data, lineCoreOptions);
             }
-        }  
+        }
 
+
+    }
+
+    function setingValuesSensors(nameSensor, id, value) {
+        if (nameSensor == "temperatura") {
+            graphThermometer(id, value);
+        }
+        if (nameSensor == "humedad") {
+            graphHumedad(id, value);
+        }
+
+        if (nameSensor == "calidad") {
+            graphCalidad(id, value);
+        }
+
+        if (nameSensor == "velocidad-aire") {
+            graphVelocidad(id, value);
+        }
+
+        if (nameSensor == "direccion-viento") {
+            graphDireccion(id, value);
+        }
 
     }
 
@@ -134,24 +107,24 @@ window.onload = function() {
 
         var node = emit.node;
         var sensor = emit.name;
-        var nodeGauge = dataGauge[node];
-        
+        var nodeDataInfo = dataInfo[node];
+
         console.debug("**** Pindando datos para el nodo '" + node + "' ****");
 
-        for (var i in nodeGauge) {
-            if (sensor == nodeGauge[i].nameSensor) {
-                var nameSensor = nodeGauge[i].nameSensor;
+        for (var i in nodeDataInfo) {
+            if (sensor == nodeDataInfo[i].nameSensor) {
+                var nameSensor = nodeDataInfo[i].nameSensor;
+                var id = nodeDataInfo[i].id;
                 var value = parseFloat(emit.data);
 
                 console.debug("Pintar '" + nameSensor + "' con el valor: " + value);
-                nodeGauge[i].data.setValue(0, 1, value);
-                nodeGauge[i].gauge.draw(nodeGauge[i].data, gaugeOptions[nameSensor].options);
-
+                nodeDataInfo[i].data.setValue(0, 1, value);
+                setingValuesSensors(nameSensor, id, value);
                 rowLineCore.push(value);
             } else {
-                rowLineCore.push(nodeGauge[i].data.getValue(0,1));
+                rowLineCore.push(nodeDataInfo[i].data.getValue(0, 1));
             }
-         
+
         }
         console.log(dataLineCore);
         dataLineCore[node].data.addRow(rowLineCore);
@@ -179,13 +152,44 @@ window.onload = function() {
         return null;
     }
 
-    function createGaugeDiv(node, name) {
-        if (!document.getElementById(node + "-" + name)) {
-            var gauge = document.createElement('div');
-            gauge.id = node + "-" + name;
-            gauge.className = 'col-sm-6 col-md-4 col-xs-12';
-            document.getElementById('charts').appendChild(gauge);
-            return gauge;
+    function createCanvasDiv(node, nameSensor) {
+        if (!document.getElementById(node + "-" + nameSensor)) {
+            var canvas = document.createElement('canvas');
+            canvas.id = node + "-" + nameSensor;
+            var div = document.createElement('div');
+
+            if (nameSensor == "temperatura") {
+                canvas.setAttribute('height', '350');
+                canvas.setAttribute('width', '175');
+                div.innerHTML = "<h3>Temperatura</h3>";
+            }
+            if (nameSensor == "humedad") {
+                canvas.setAttribute('height', '350');
+                canvas.setAttribute('width', '500');
+                div.innerHTML = "<h3>Humedad</h3>";
+            }
+            if (nameSensor == "calidad") {
+                canvas.setAttribute('height', '350');
+                canvas.setAttribute('width', '500');
+                div.innerHTML = "<h3>Calidad del aire</h3>";
+            }
+
+            if (nameSensor == "velocidad-aire") {
+                canvas.setAttribute('height', '300');
+                canvas.setAttribute('width', '300');
+                div.innerHTML = "<h3>Velocidad del Aire</h3>";
+            }
+
+            if (nameSensor == "direccion-viento") {
+                canvas.setAttribute('height', '300');
+                canvas.setAttribute('width', '300');
+                div.innerHTML = "<h3>Dirección del Viento</h3>";
+            }
+
+            div.className = 'col-sm-6 col-md-6 col-xs-12';
+            div.appendChild(canvas);
+            document.getElementById('charts').appendChild(div);
+            return canvas;
         }
 
         return null;
@@ -198,7 +202,7 @@ window.onload = function() {
             title.className = 'page-header col-sm-12';
 
             var link = document.createElement('span');
-            var textNode = "<a href='/charts/"+node+"' title='Ver datos de este nodo'>NODO: " + node+"</a>";
+            var textNode = "<a href='/charts/" + node + "' title='Ver datos de este nodo'>NODO: " + node + "</a>";
             link.innerHTML = textNode;
             title.appendChild(link);
 
@@ -206,5 +210,119 @@ window.onload = function() {
             return title;
         }
         return null;
+    }
+
+
+    function graphHumedad(id, value) {
+
+        return new RGraph.VProgress({
+            id: id,
+            min: 0,
+            max: 100,
+            value: value,
+            options: {
+                textAccessible: true,
+                colors: ['pink'],
+                scale: {
+                    decimals: 1
+                },
+                gutter: {
+                    left: 225,
+                    right: 225
+                },
+                margin: 10,
+                tickmarks: {
+                    inner: true
+                }
+            }
+        }).draw();
+
+    }
+
+
+    function graphThermometer(id, value) {
+        return new RGraph.Thermometer({
+            id: id,
+            min: 0,
+            max: 55,
+            value: value,
+            options: {
+                textAccessible: true,
+                scale: {
+                    visible: true,
+                    decimals: 2
+                },
+                gutter: {
+                    left: 60,
+                    right: 60
+                },
+                'shadow.color': '#ccc',
+                'shadow.offsetx': 2,
+                'shadow.offsety': 2,
+                'shadow.blur': 5
+            }
+        }).draw();
+    }
+
+    function graphCalidad(id, value) {
+        return new RGraph.Meter({
+            id: id,
+            min: 0,
+            max: 300,
+            value: value,
+            options: {
+                anglesStart: RGraph.PI + 0.5,
+                anglesEnd: RGraph.TWOPI - 0.5,
+                linewidthSegments: 15,
+                textSize: 16,
+                strokestyle: 'white',
+                segmentRadiusStart: 155,
+                border: 0,
+                tickmarksSmallNum: 0,
+                tickmarksBigNum: 0,
+                adjustable: true
+            }
+        }).on('beforedraw', function(obj) {
+            RGraph.clear(obj.canvas, 'white');
+        }).draw();
+    }
+
+    function graphVelocidad(id, value) {
+        return new RGraph.Gauge({
+            id: id,
+            min: 0,
+            max: 300,
+            value: value,
+            options: {
+                textSize: 12,
+                scaleDecimals: 0,
+                tickmarks: {
+                    small: 50,
+                    big: 5
+                },
+                title: {
+                    top: {
+                        self: 'Velocidad',
+                        size: 16,
+                        pos: 0.25
+                    },
+                    bottom: {
+                        self: 'K/h',
+                        color: '#aaa',
+                        size: 14
+                    }
+                }
+            }
+        }).draw();
+    }
+
+    function graphDireccion(id, value) {
+        return new RGraph.Odometer({
+            id: id,
+            min: 0,
+            max: 12,
+            value: value
+          
+        }).draw();
     }
 }
