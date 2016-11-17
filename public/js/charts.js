@@ -92,8 +92,8 @@ window.onload = function() {
             graphCalidad(id, value);
         }
 
-        if (nameSensor == "velocidad-aire") {
-            graphVelocidad(id, value);
+        if (nameSensor == "anemometro") {
+            graphAnemometro(id, value);
         }
 
         if (nameSensor == "direccion-viento") {
@@ -174,10 +174,10 @@ window.onload = function() {
                 div.innerHTML = "<h3>Calidad del aire</h3>";
             }
 
-            if (nameSensor == "velocidad-aire") {
+            if (nameSensor == "anemometro") {
                 canvas.setAttribute('height', '300');
                 canvas.setAttribute('width', '300');
-                div.innerHTML = "<h3>Velocidad del Aire</h3>";
+                div.innerHTML = "<h3>Anemometro</h3>";
             }
 
             if (nameSensor == "direccion-viento") {
@@ -287,7 +287,7 @@ window.onload = function() {
         }).draw();
     }
 
-    function graphVelocidad(id, value) {
+    function graphAnemometro(id, value) {
         return new RGraph.Gauge({
             id: id,
             min: 0,
