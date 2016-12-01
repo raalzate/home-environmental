@@ -1,0 +1,25 @@
+extends ../../node_modules/jade-bootstrap/layouts/navbar-fixed
+
+append styles	
+    link(href='/css/style.css', rel='stylesheet')
+
+block body
+  +navbar-fixed("Estadística","navbar")
+    ul(class="nav navbar-nav", id="menu-sensor") 
+  .container
+    .masthead
+      h3.text-muted Graficas para  
+        span(id="node-name-title")
+    div(class="panel panel-default")
+      div.panel-heading
+        h3.panel-title Análisis de datos de los sensores sensores
+      div.panel-body  
+        div(id="linechart_material", class="row")
+      
+    // Site footer
+    footer.footer
+      p © github.com/raalzate 2016, Trabajo de Tesis para la <a href="https://www.unad.edu.co/">Universidad Nacional Abierta y a Distancia (UNAD) </a>, Programa de Ingeniería en Electrónica
+
+append scripts
+    script(src="https://www.gstatic.com/charts/loader.js")
+    script(src='/js/charts-node.js')

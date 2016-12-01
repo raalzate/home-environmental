@@ -1,0 +1,37 @@
+extends ../../node_modules/jade-bootstrap/layouts/navbar-fixed
+
+append styles	
+    link(href='/css/style.css', rel='stylesheet')
+    link(href='/css/navbar-fixed-top.css', rel='stylesheet')
+
+
+block body
+  +navbar-fixed("Sensores","navbar")
+    ul(class="nav navbar-nav", id="menu-sensor") 
+  .container
+    .masthead
+      h3.text-muted Estación Local - Ubicación desconocida
+    div(class="panel panel-default")
+      div.panel-heading
+        h3.panel-title Análisis de datos de sensores
+      div.panel-body  
+        div(id="charts", class="row")
+      
+    // Site footer
+    footer.footer
+      p © github.com/raalzate 2016, Trabajo de Tesis para la <a href="https://www.unad.edu.co/">Universidad Nacional Abierta y a Distancia (UNAD) </a>, Programa de Ingeniería en Electrónica
+
+append scripts
+    script(src="https://www.gstatic.com/charts/loader.js")
+    script(src='/socket.io/socket.io.js')
+    script(src='/js/RGraph/RGraph.common.core.js')
+    script(src='/js/RGraph/RGraph.common.tooltips.js')
+    script(src='/js/RGraph/RGraph.common.dynamic.js')
+    script(src='/js/RGraph/RGraph.common.resizing.js')
+    script(src='/js/RGraph/RGraph.thermometer.js')
+    script(src='/js/RGraph/RGraph.vprogress.js')
+    script(src='/js/RGraph/RGraph.gauge.js')
+    script(src='/js/RGraph/RGraph.odo.js')
+    script(src='/js/RGraph/RGraph.meter.js')
+  
+    script(src='/js/charts.js')
