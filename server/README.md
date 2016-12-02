@@ -13,12 +13,15 @@ El sistema debe contar con: [nodejs](https://nodejs.org/es/), [npm](https://www.
 ```sh
 $ apt-get update 
 
+$ apt-get install -y git
+
 $ curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
 $ apt-get install -y nodejs
 
 $ apt-get install -y mongodb
 
 $ apt-get install -y mosquitto
+
 ```
 
 ## Como usarlo
@@ -26,6 +29,10 @@ $ apt-get install -y mosquitto
 Ingresar a la consola e instalar las dependncias.
 
 ```sh
+$ git clone https://github.com/raalzate/home-environmental
+
+$ cd home-environmental
+
 $ npm install
 ```
 Se debe inicial el servidor utilizando el siguiente comando.
