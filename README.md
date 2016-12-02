@@ -3,30 +3,14 @@ Este proyecto está enfocado para el desarrollo del control y gestión de sensor
 
 El Proyecto captura los datos por medio del protocolo MQTT, utilizando un Server-Side (nodejs) como mediador, para luego exponerlo en un webservice. 
 
-Se debe ejecutar  el siguiente comando para instalar las dependencias.
+Utiliza el kit de desarrollo NodeMCU para transmitir los datos y comunicar los sensores con el servidor, este desarrollo esta bajo un mismo lineamiento establecido por una librería estandarizada para el dialogo entre el servidor y los nodos.  Los nodos abarcan diferentes sensores, ya que el nodo trabaja bajo el modelo publicador. 
 
-$ npm install
+##Dependencias
 
-Se debe inicial el servidor utilizando el siguiente comando.
+- [Nodes](https://github.com/raalzate/home-environmental/tree/master/nodes)
+- [Server](https://github.com/raalzate/home-environmental/tree/master/server)
 
-$ node index.js
+## Topologia de la arquitectura 
 
-## Dependencias 
-
-El sistema debe contar con: nodejs, mongodb y mosquitto. Mas información en el blog principal.  
-
-## Indicaciones 
-
-1. Para iniciar es necesario registrar el nodo para ello utilizamos el topic **register** con el mensaje del nombre del nodo ej. “temperatura”.
-2. Debemos enviar un valor numerico que corresponde al censo, para ello utilizamos el topic **sensor** con el mensaje correspondiente.
-3. Para obtener los nodos registrados hacemos uso del servicio Rest, utilizando cualquier tipo de cliente Rest “{ip-local}:3300/rest/sensors” 
-
-
-## Charts
-
-Para disponer de las gráficas debemos ingresar por url la ruta {ip-local}:3300/charts.
-
-Mas información:
-
-http://noterau.blogspot.com.co/2016/05/sensor-ambiental-prototipo.html
+![Diagrama de flujo](https://raw.githubusercontent.com/raalzate/home-environmental/master/asserts/topologia.png)
 
