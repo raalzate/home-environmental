@@ -18,7 +18,7 @@ Para mas indicaciones de la libreria del nodemcu para arduino ingresa aquí: [Qu
 
 ## Configuración
 Cuando tengamos todo instalado en nuestro PC debemos quemar el Software utilizando el IDE de Arduino, 
-utilizamos la APK para configurar nuestro nodemcu, debemos descargar aquí:
+utilizamos la APK para configurar nuestro nodemcu, debemos descargar [aquí](https://raw.githubusercontent.com/raalzate/home-environmental/master/asserts/app-debug.apk):
 
 1. Conecte el nodemcu al PC y abra la aplicación en Android, luego precione el boton de buscar, es posible que no encuentre al instante el dispositivo, intente varias veces. 
 2. Ingresar los datos de tu red para configurar el nodemcu.
