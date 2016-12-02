@@ -4,6 +4,12 @@ Para poder realizar el censo de los datos ambientales se realiza un pequeño cli
 
 ## Dependencias
  - [INodeUH (Internet Node Use Home)](./tree/master/INodeUH/)
+ - EEPROM
+ - ESP8266WiFi
+ - PubSubClient
+ - Wire
+ - WiFiClient 
+ - ESP8266WebServer
  
 Para mas indicaciones de la libreria del nodemcu para arduino ingresa aquí: [Quick Start to Nodemcu (ESP8266) on Arduino IDE](http://www.instructables.com/id/Quick-Start-to-Nodemcu-ESP8266-on-Arduino-IDE/).
 
