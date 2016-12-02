@@ -8,24 +8,31 @@ El sistema esta construido para trabajar en un servidor liviano ya sea una Raspb
 
 El sistema debe contar con: [nodejs](https://nodejs.org/es/), [npm](https://www.npmjs.com/), [mongodb](https://www.mongodb.com/es) y [mosquitto](https://mosquitto.org/). Mas información en el blog principal.  
 
-``bash
-curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+### Instalaciones
+
+```sh
+$ apt-get update 
+
+$ curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
 $ apt-get install -y nodejs
 
 $ apt-get install -y mongodb
 
 $ apt-get install -y mosquitto
-``
+```
 
 ## Como usarlo
 
 Ingresar a la consola e instalar las dependncias.
 
+```sh
 $ npm install
-
+```
 Se debe inicial el servidor utilizando el siguiente comando.
 
+```sh
 $ npm start
+```
 
 
 ## Indicaciones 
