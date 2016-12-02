@@ -171,11 +171,11 @@ function notifyRegister(dataInto) {
     }
 }
 
-app.get('/', function(req, res) {
+app.get('/console', function(req, res) {
     res.render("page");
 });
 
-app.get('/charts', function(req, res) {
+app.get('/', function(req, res) {
     res.render("charts");
     notifyAllRegister();
 });
