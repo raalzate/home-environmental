@@ -1,5 +1,5 @@
 
-#define MQTT_SERVER  "192.168.1.69"//host of respberry
+#define MQTT_SERVER  “192.168.0.23”//host of respberry
 #define AP_SSID  "SensorUseHome"// SSID access point
 #define AP_PASSWORD  "12345678"// password access point
 

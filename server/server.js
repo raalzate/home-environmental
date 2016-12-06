@@ -194,7 +194,7 @@ app.get('/rest/data/:nodo', function(req, res) {
 
 //io Socket
 var io = require('socket.io').listen(app.listen(3300, function() { //listener
-    console.log('Example app listening on port 3300!');
+    console.log('Home Environmental app listening on port 3300!');
 }));
 io.sockets.on('connection', function(socket) {
     globalSocket[socket.id] = socket; //set global socket

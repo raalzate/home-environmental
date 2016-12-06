@@ -33,6 +33,8 @@ $ git clone https://github.com/raalzate/home-environmental
 
 $ cd home-environmental
 
+$ cd server
+
 $ npm install
 ```
 Se debe inicial el servidor utilizando el siguiente comando.
