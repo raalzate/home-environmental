@@ -1,10 +1,11 @@
-extends ../../node_modules/jade-bootstrap/layouts/navbar-fixed
+extends ../../node_modules/pug-bootstrap/layouts/navbar-fixed
 
 append styles	
+    link(rel="stylesheet",href="https://bootswatch.com/flatly/bootstrap.min.css")
     link(href='/css/style.css', rel='stylesheet')
 
 block body
-  +navbar-fixed("Estadística","navbar")
+  +navbar-fixed(title,"navbar","default", "/")
     ul(class="nav navbar-nav", id="menu-sensor") 
   .container
     .masthead
@@ -12,7 +13,7 @@ block body
         span(id="node-name-title")
     div(class="panel panel-default")
       div.panel-heading
-        h3.panel-title Análisis de datos de los sensores sensores
+        h3.panel-title Análisis de datos de los sensores
       div.panel-body  
         div(id="linechart_material", class="row")
       

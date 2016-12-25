@@ -1,5 +1,7 @@
 var express = require('express');
 var bodyParser = require("body-parser");
+var prompt = require('prompt');
+
 var helperDB = require('./src/helperDB');
 var helperMQTT = require('./src/helperMQTT');
 var onMessageMQTT = require('./src/onMessageMQTT');
@@ -11,8 +13,9 @@ var repository = new helperDB();
 var serverMQTT = new helperMQTT();
 
 app.set('views', __dirname + '/src/views');
-app.set('view engine', "jade");
-app.engine('jade', require('jade').__express);
+app.set('view engine', "pug");
+app.engine('pug', require('pug').__express);
+
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({
     extended: false
@@ -28,32 +31,83 @@ require("jsdom").env("", function(err, window) {
     var $ = require("jquery")(window);
 });
 
+prompt.start();
 
-/**
- * Esta funcion se encarga de conectarse al servidor MQTT y 
- * suscribir el nodo que esta en la coleccion COLL_NODE_REGISTER
- */
- 
-serverMQTT.connect(function(clientMQTT) {
 
-    //iniciar observadores
-    observerEnvironmental(clientMQTT);
-    clientMQTT.subscribe("register");
+prompt.get(['title', 'location'], function (errParams, params) {
+    
+    /**
+     * Esta funcion se encarga de conectarse al servidor MQTT y 
+     * suscribir el nodo que esta en la coleccion COLL_NODE_REGISTER
+     */
+     
+    serverMQTT.connect(function(clientMQTT) {
 
-    //load todos los registros para suscribirse 
-    repository.getRegisterNodes(function(err, result) {
-        if (!err) {
-            for (index in result) {
-                console.log("subscribe los sensores del nodo" + result[index].name.toLowerCase());
-                //subscibe los sensores del nodo
-                for(key in result[index].sensors){
-                    var sensor = result[index].sensors[key];
-                    clientMQTT.subscribe(result[index].name+"/"+sensor);
+        //iniciar observadores
+        observerEnvironmental(clientMQTT);
+        clientMQTT.subscribe("register");
+
+        //load todos los registros para suscribirse 
+        repository.getRegisterNodes(function(err, result) {
+            if (!err) {
+                for (index in result) {
+                    console.log("subscribe los sensores del nodo" + result[index].name.toLowerCase());
+                    //subscibe los sensores del nodo
+                    for(key in result[index].sensors){
+                        var sensor = result[index].sensors[key];
+                        clientMQTT.subscribe(result[index].name+"/"+sensor);
+                    }
                 }
             }
-        }
+        });
     });
+
+
+    app.get('/console', function(req, res) {
+        res.render("page");
+    });
+
+    app.get('/', function(req, res) {
+        res.render("charts", {
+            title: params.title,
+            location: params.location
+        });
+        notifyAllRegister();
+    });
+
+    app.get('/charts/:node', function(req, res) {
+        res.render("charts-node",{
+            title: params.title
+        });
+    });
+
+    app.get('/rest/data/:nodo', function(req, res) {
+        console.log(req.params.nodo);
+       repository.getDataSensors(req.params.nodo, function(err, result){
+            if (err) res.send(500, err.message);
+            else res.status(200).jsonp(result);
+        });
+    });
+
+    //io Socket
+    var io = require('socket.io').listen(app.listen(3300, function() { //listener
+        console.log('Home Environmental app listening on port 3300!');
+    }));
+    io.sockets.on('connection', function(socket) {
+        globalSocket[socket.id] = socket; //set global socket
+        console.log('conectado al socket ' + socket.id);
+        notifyAllRegister();
+        socket.on("disconnect", function() {
+            console.log('disconnect del socket ' + socket.id);
+            delete globalSocket[socket.id];
+        });  
+    });
+
+
 });
+
+
+
 
 /**
  * Esta funcion se encarga de observar los nodos
@@ -170,38 +224,3 @@ function notifyRegister(dataInto) {
         });
     }
 }
-
-app.get('/console', function(req, res) {
-    res.render("page");
-});
-
-app.get('/', function(req, res) {
-    res.render("charts");
-    notifyAllRegister();
-});
-
-app.get('/charts/:node', function(req, res) {
-    res.render("charts-node");
-});
-
-app.get('/rest/data/:nodo', function(req, res) {
-    console.log(req.params.nodo);
-   repository.getDataSensors(req.params.nodo, function(err, result){
-        if (err) res.send(500, err.message);
-        else res.status(200).jsonp(result);
-    });
-});
-
-//io Socket
-var io = require('socket.io').listen(app.listen(3300, function() { //listener
-    console.log('Home Environmental app listening on port 3300!');
-}));
-io.sockets.on('connection', function(socket) {
-    globalSocket[socket.id] = socket; //set global socket
-    console.log('conectado al socket ' + socket.id);
-    notifyAllRegister();
-    socket.on("disconnect", function() {
-        console.log('disconnect del socket ' + socket.id);
-        delete globalSocket[socket.id];
-    });  
-});

@@ -118,6 +118,7 @@ window.onload = function() {
                 var value = parseFloat(emit.data);
 
                 console.debug("Pintar '" + nameSensor + "' con el valor: " + value);
+                successSetData(node, nameSensor);
                 nodeDataInfo[i].data.setValue(0, 1, value);
                 setingValuesSensors(nameSensor, id, value);
                 rowLineCore.push(value);
@@ -131,6 +132,15 @@ window.onload = function() {
         dataLineCore[node].lineCore.draw(dataLineCore[node].data, lineCoreOptions);
     }
 
+    function successSetData(node, nameSensor){
+        document.getElementById("panel-"+node + "-" + nameSensor).className = "panel panel-success";
+        setTimeout(function (){
+            document.getElementById("panel-"+node + "-" + nameSensor).className 
+                = "panel panel-info";
+        }, 1500);
+    }
+
+    
     function initAllCharts() {
         var socket = io.connect('http://' + document.domain + ':3300');
         socket.on('setDataRegisters', setDataRegisters);
@@ -162,37 +172,41 @@ window.onload = function() {
             var title = document.createElement("div");
             var content = document.createElement("div");
 
+            title.innerHTML = getBtnConfig(canvas.id);
+
             if (nameSensor == "temperatura") {
                 canvas.setAttribute('height', '350');
                 canvas.setAttribute('width', '175');
-                title.innerHTML ="<h3 class='panel-title'>Temperatura en °C</h3>";
+                title.innerHTML += "<h3 class='panel-title'>Temperatura en °C</h3>";
             }
             if (nameSensor == "humedad") {
                 canvas.setAttribute('height', '350');
                 canvas.setAttribute('width', '500');
-                title.innerHTML =  "<h3 class='panel-title'>Humedad relativa</h3>";
+                title.innerHTML += "<h3 class='panel-title'>Humedad relativa</h3>";
             }
             if (nameSensor == "calidad") {
                 canvas.setAttribute('height', '350');
                 canvas.setAttribute('width', '500');
-                title.innerHTML = "<h3 class='panel-title'>Calidad del aire PM10 µg/m³</h3>";
+                title.innerHTML += "<h3 class='panel-title'>Calidad del aire PM10 µg/m³</h3>";
             }
 
             if (nameSensor == "anemometro") {
                 canvas.setAttribute('height', '300');
                 canvas.setAttribute('width', '300');
-                title.innerHTML = "<h3 class='panel-title'>Anemometro en K/h</h3>";
+                title.innerHTML += "<h3 class='panel-title'>Anemometro en K/h</h3>";
             }
 
             if (nameSensor == "direccion-viento") {
                 canvas.setAttribute('height', '300');
                 canvas.setAttribute('width', '300');
-                title.innerHTML = "<h3 class='panel-title'>Dirección del viento</h3>";
+                title.innerHTML += "<h3 class='panel-title'>Dirección del viento</h3>";
             }
 
             container.className = 'col-sm-6 col-md-6 col-xs-12';
            
-            content.className = "panel panel-default";
+            content.className = "panel panel-info";
+            content.id = "panel-"+canvas.id;
+
             title.className = "panel-heading";
             body.className = "panel-body";
             body.appendChild(canvas);
@@ -234,6 +248,18 @@ window.onload = function() {
         return null;
     }
 
+
+    function getBtnConfig(id){
+        var html = '<div class="dropdown pull-right">';
+         html += '<button type="button" data-toggle="dropdown" class="btn dropdown-toggle glyphicon glyphicon-cog"  style="margin-top: -8px;margin-right: -12px;padding: 4px;">';
+         html += '<span class="caret"></span></button>';
+         html += '<ul role="menu" class="dropdown-menu">';
+         html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Agregar Reglas</a></li>';
+         html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Ver Estadisticas</a></li>';
+         html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Deshabilitar Sensor</a></li>';
+         html += '</ul></div>';
+        return html;
+    }
 
     function graphHumedad(id, value) {
 

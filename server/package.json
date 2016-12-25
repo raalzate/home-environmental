@@ -6,19 +6,19 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
-
   },
   "author": "Raul A. Alzate",
   "license": "BSD-2-Clause",
   "dependencies": {
     "body-parser": "^1.5.1",
     "express": "~4.13.4",
-    "jade": "^1.11.0",
-    "jade-bootstrap": "^1.0.6",
     "jquery": "^3.1.1",
     "jsdom": "^9.8.3",
-    "mongodb": "~2.1.18",
+    "mongodb": "~2.2.16",
     "mqtt": "~1.10.0",
+    "prompt": "^1.0.0",
+    "pug": "^2.0.0-beta6",
+    "pug-bootstrap": "0.0.9",
     "socket.io": "^1.4.6"
   }
 }
