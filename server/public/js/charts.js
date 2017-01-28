@@ -14,10 +14,11 @@ window.onload = function() {
         "temperatura":"Temperatura en °C",
         "humedad":"Humedad Ambiente",
         "calidad": "Calidad del Aire",
-        "direccion":"Direccion del viento"
+        "direccion":"Direccion del viento",
+        "anemometro":"Anemometro"
     };
     var widgets = {
-        "": function(id){wg_default(id, renderSender)},
+        "anemometro": function(id){wg_default(id, renderSender)},
         "temperatura": function(id){wg_thermometer(id, renderSender)},
         "humedad": function(id) {wg_humididy(id, renderSender)},
         "calidad":function(id) {wg_quality(id, renderSender)},
