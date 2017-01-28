@@ -35,11 +35,12 @@ ESP8266WebServer server(80);
 PubSubClient     client(espClient);
 
 
-INodeUH::INodeUH(String nameNode, String sensors)
+INodeUH::INodeUH(String ip, String nameNode, String sensors)
 {
   _nameNode = nameNode;
   _indexSensors = 0;
   _sensors = sensors;
+  _ip = ip;
 }
 
 void INodeUH::setup()
@@ -134,12 +135,12 @@ bool INodeUH::isConnected()
 void INodeUH::sleepIntro()
 {
   digitalWrite(LED_STATUS_SEND, HIGH);
-  delay(10);
+  delay(100);
 }
 
 void INodeUH::sleppOutput()
 {
-  delay(1000);
+  delay(5000);
   digitalWrite(LED_STATUS_SEND, LOW);
 }
 
@@ -153,8 +154,8 @@ void INodeUH::settingPinMode()
 void INodeUH::settingWifi()
 {
 
-  client.setServer(MQTT_SERVER, 1883);
-  Serial.println("\nStartup");  
+  client.setServer(_ip.c_str(), 1883);
+  Serial.println("\nStartup");
   findSsidAndPassword();
   if (_essid.length() > 3 ) {
       WiFi.begin(_essid.c_str(), _epass.c_str());
@@ -249,7 +250,7 @@ void INodeUH::handleRegisterAuthWiFi()
  
   cleanDataWifi();
   saveWifiAndTopic(argSSID,argPassword);
-  String reqJson = "{\"status\":\"success\",\"ssid\":\""+argSSID+"\",\"password\":\""+argPassword+"\",\"node\":\""+_nameNode+"\"}";
+  String reqJson = "{\"status\":\"success\",\"sensors\":\""+_sensors+"\",\"ip\":\""+_ip+"\",\"node\":\""+_nameNode+"\"}";
   server.send(200, "application/json",  reqJson);
   WiFi.disconnect();
   delay(1000);

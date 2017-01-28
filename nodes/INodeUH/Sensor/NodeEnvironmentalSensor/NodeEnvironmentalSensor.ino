@@ -6,7 +6,7 @@
 #define PUT_QUALITY A0
 #define DHTTYPE DHT11 
 
-INodeUH inode("node002-environmental", "temperatura,humedad,calidad");
+INodeUH inode("192.168.0.66","node002-environmental", "temperatura,humedad,calidad");
 DHT dht(DHTPIN, DHTTYPE);
 
 void setup() 
@@ -23,7 +23,6 @@ void loop() {
      if (!inode.isConnected()) {
        inode.reconnect();
      }
-     delay(5000);
      inode.addDataToSensor("temperatura", getSensorTemperature());
      inode.addDataToSensor("humedad", getSensorHumedad());
      inode.addDataToSensor("calidad", getSensorCalidad());
