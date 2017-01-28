@@ -1,11 +1,10 @@
 extends ../../node_modules/pug-bootstrap/layouts/navbar-fixed
 
-block head
-  append styles	
-      link(rel="stylesheet",href="https://bootswatch.com/flatly/bootstrap.min.css")
-      link(href='/css/style.css', rel='stylesheet')
-      link(href='/css/navbar-fixed-top.css', rel='stylesheet')
-      title=title
+append styles	
+    link(rel="stylesheet",href="https://bootswatch.com/flatly/bootstrap.min.css")
+    link(href='/css/style.css', rel='stylesheet')
+    link(href='/css/navbar-fixed-top.css', rel='stylesheet')
+      
 block body
   +navbar-fixed(title,"navbar","default", "/")
     ul(class="nav navbar-nav", id="menu-sensor") 
@@ -23,16 +22,13 @@ block body
       p © github.com/raalzate 2016, Trabajo de Tesis para la <a href="https://www.unad.edu.co/">Universidad Nacional Abierta y a Distancia (UNAD) </a>, Programa de Ingeniería en Electrónica
 
 append scripts
+    script(src="http://static.fusioncharts.com/code/latest/fusioncharts.js")
+    script(src="http://static.fusioncharts.com/code/latest/themes/fusioncharts.theme.fint.js?cacheBust=56")
     script(src="https://www.gstatic.com/charts/loader.js")
     script(src='/socket.io/socket.io.js')
-    script(src='/js/RGraph/RGraph.common.core.js')
-    script(src='/js/RGraph/RGraph.common.tooltips.js')
-    script(src='/js/RGraph/RGraph.common.dynamic.js')
-    script(src='/js/RGraph/RGraph.common.resizing.js')
-    script(src='/js/RGraph/RGraph.thermometer.js')
-    script(src='/js/RGraph/RGraph.vprogress.js')
-    script(src='/js/RGraph/RGraph.gauge.js')
-    script(src='/js/RGraph/RGraph.odo.js')
-    script(src='/js/RGraph/RGraph.meter.js')
-  
+    script(src='/js/widgets/thermometer.js')
+    script(src='/js/widgets/humidity.js')
+    script(src='/js/widgets/quality.js')
+    script(src='/js/widgets/vane.js')
+    script(src='/js/widgets/default.js')
     script(src='/js/charts.js')

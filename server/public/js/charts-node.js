@@ -8,21 +8,21 @@ window.onload = function() {
 
 
     lineOptions['temperatura'] = {
-        label: "Sensor de Temperatura por Fecha",
+        label: "SENSOR DE TEMPERATURA",
         dataDescription: "Valor de temperatura",
         redGreaterThan: 32,
         yellowGreaterThan: 25,
     };
 
     lineOptions['humedad'] = {
-        label: "Sensor de Humedad por Fecha",
+        label: "SENDOR DE HUMEDAD",
         dataDescription: "Valor de humedad",
         redGreaterThan: 64,
         yellowGreaterThan: 30,
     };
 
     lineOptions['calidad'] = {
-        label: "Sensor de Calidad Aire por Fecha",
+        label: "SENSOR DE CALIDAD DE AIRE",
         dataDescription: "Valor de calidad de aire",
         redGreaterThan: 100,
         yellowGreaterThan: 24,
@@ -57,31 +57,44 @@ window.onload = function() {
                     }]
                 ];
                 var div = createLineDiv("node", s);
-                var options = {
-                    title: lineOptions[s].label,
-                    width: "100%",
-                    height: 600,
-                    bar: {
-                        groupWidth: "95%"
-                    },
-                    legend: {
-                        position: "none"
-                    },
-                };
+                
                 for (d in sensor[s]) {
                     var color = 'color: gray';
-                    if (parseFloat(sensor[s][d][1]) > parseFloat(lineOptions[s].yellowGreaterThan)) {
+                    /*if (parseFloat(sensor[s][d][1]) > parseFloat(lineOptions[s].yellowGreaterThan)) {
                         color = 'color: yellow';
                     }
                     if (parseFloat(sensor[s][d][1]) > parseFloat(lineOptions[s].redGreaterThan)) {
                         color = 'color: red';
-                    }
+                    }*/
                     var date = new Date(sensor[s][d][0]);
                     var dateLabel = date.getMonth()+"/"+date.getDate()+" "+date.getHours()+":"+date.getMinutes();
                     data.push([dateLabel, parseFloat(sensor[s][d][1]), color]);
+
                 }
 
-                var chart = new google.visualization.ColumnChart(div);
+                var options = {
+                    title: lineOptions[s].label,
+                    width: "100%",
+                    height: 600,
+                    curveType:'function',
+                    hAxis: {
+                      title: 'Fecha',
+                      gridlines:{color: '#f3f3f3', count: 10}
+                    },
+                    legend : {position: 'none'},
+                    vAxis: {
+                      title: 'Valores censados',
+                      gridlines:{color: '#f3f3f3', count: 10}
+                    },
+                    colors: ['#000', '#000'],
+                    crosshair: {
+                      color: '#000',
+                      trigger: 'selection'
+                    }
+                };
+
+
+                var chart = new google.visualization.LineChart(div);
                 chart.draw(google.visualization.arrayToDataTable(data), options);
             }
 
