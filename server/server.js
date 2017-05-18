@@ -33,13 +33,13 @@ require("jsdom").env("", function(err, window) {
 prompt.start();
 
 
-prompt.get(['title', 'location'], function (errParams, params) {
-    
+prompt.get(['title', 'location', 'logs'], function(errParams, params) {
+
     /**
      * Esta funcion se encarga de conectarse al servidor MQTT y 
      * suscribir el nodo que esta en la coleccion COLL_NODE_REGISTER
      */
-     
+
     serverMQTT.connect(function(clientMQTT) {
 
         //iniciar observadores
@@ -50,21 +50,19 @@ prompt.get(['title', 'location'], function (errParams, params) {
         repository.getRegisterNodes(function(err, result) {
             if (!err) {
                 for (index in result) {
-                    console.log("subscribe los sensores del nodo" + result[index].name.toLowerCase());
+                    if (params.logs == 1) {
+                        console.log("subscribe los sensores del nodo" + result[index].name.toLowerCase());
+                    }
                     //subscibe los sensores del nodo
-                    for(key in result[index].sensors){
+                    for (key in result[index].sensors) {
                         var sensor = result[index].sensors[key];
-                        clientMQTT.subscribe(result[index].name+"/"+sensor);
+                        clientMQTT.subscribe(result[index].name + "/" + sensor);
                     }
                 }
             }
         });
     });
 
-
-    app.get('/console', function(req, res) {
-        res.render("page");
-    });
 
     app.get('/', function(req, res) {
         res.render("charts", {
@@ -73,16 +71,45 @@ prompt.get(['title', 'location'], function (errParams, params) {
         });
         notifyAllRegister();
     });
-
+    app.get('/console', function(req, res) {
+        res.render("console", {
+            title: params.title,
+            subtitule: ""
+        });
+    });
+    app.get('/console/:node/:sensor', function(req, res) {
+        res.render("console", {
+            title: params.title,
+            subtitule: req.params.node + " - " + req.params.sensor
+        });
+    });
+    app.get('/console/:node', function(req, res) {
+        res.render("console", {
+            title: params.title,
+            subtitule: req.params.node
+        });
+    });
     app.get('/charts/:node', function(req, res) {
-        res.render("charts-node",{
+        res.render("charts-node", {
+            title: params.title
+        });
+    });
+
+    app.get('/charts/:node/:sensor', function(req, res) {
+        res.render("charts-node", {
             title: params.title
         });
     });
 
     app.get('/rest/data/:nodo', function(req, res) {
-        console.log(req.params.nodo);
-       repository.getDataSensors(req.params.nodo, function(err, result){
+        repository.getDataSensors(req.params.nodo, function(err, result) {
+            if (err) res.send(500, err.message);
+            else res.status(200).jsonp(result);
+        });
+    });
+
+    app.get('/rest/data/:nodo/:sensor', function(req, res) {
+        repository.getDataBySensor(req.params.nodo, req.params.sensor, function(err, result) {
             if (err) res.send(500, err.message);
             else res.status(200).jsonp(result);
         });
@@ -94,132 +121,151 @@ prompt.get(['title', 'location'], function (errParams, params) {
     }));
     io.sockets.on('connection', function(socket) {
         globalSocket[socket.id] = socket; //set global socket
-        console.log('conectado al socket ' + socket.id);
+        if (params.logs == 1) {
+            console.log('conectado al socket ' + socket.id);
+        }
         notifyAllRegister();
         socket.on("disconnect", function() {
-            console.log('disconnect del socket ' + socket.id);
+            if (params.logs == 1) {
+                console.log('disconnect del socket ' + socket.id);
+            }
             delete globalSocket[socket.id];
-        });  
+        });
     });
 
 
-});
 
+    /**
+     * Esta funcion se encarga de observar los nodos
+     */
+    function observerEnvironmental(clientMQTT) {
+        serverMQTT.observer(function(topic, value) {
+            var expreg = /register\/*/;
 
-
-
-/**
- * Esta funcion se encarga de observar los nodos
- */
-function observerEnvironmental(clientMQTT) {
-    serverMQTT.observer(function(topic, value) {
-        var expreg = /register\/*/;
-    
-        if(topic == "register"){
-            console.log("--- NUEVO REGISTER ---");
-            console.log("register/"+value);
-            //realiza el registro del nodo nuevo
-            clientMQTT.subscribe("register/"+value);
-        }else if (expreg.test(topic)) {
-            //es un register (node)
-            insertNodeRegister(clientMQTT, topic, value);
-            console.log('Publish data register');
-        } else {
-            //es un data del nodo
-            insertSensorData(topic, value);
-            console.log('Publish data sensor');
-        }
-    }); //observer
-}
-
-/**
- * esta funcion inserta un nuevo nodo y se suscribe al nodo registrado
- * igualmente notifica el nuevo registro al socket
- */
-function insertNodeRegister(clientMQTT, topic, value) {
-    console.log(topic+" : "+value);
-    console.log("*********************");
-
-    var sensors = value.toString();
-
-    var dataInfo = {
-        name: topic.split("/")[1],
-        sensors: sensors.split(','),
-        intoDate: new Date()
-    };
-
-    repository.insertRegisterNode(dataInfo, function(err, result) {
-        if (!err) {
-            console.log("unsubscribe " + topic);
-            clientMQTT.unsubscribe(topic);
-
-            //subscibe los sensores del nodo
-            for(key in dataInfo.sensors){
-                var sensor = dataInfo.sensors[key];
-                console.log("-- sensor subscribe : " + dataInfo.name+"/"+sensor);
-                clientMQTT.subscribe(dataInfo.name+"/"+sensor);
+            if (topic == "register") {
+                if (params.logs == 1) {
+                    console.log("--- NUEVO REGISTER ---");
+                    console.log("register/" + value);
+                }
+                //realiza el registro del nodo nuevo
+                clientMQTT.subscribe("register/" + value);
+            } else if (expreg.test(topic)) {
+                //es un register (node)
+                insertNodeRegister(clientMQTT, topic, value);
+                if (params.logs == 1) {
+                    console.log('Publish data register');
+                }
+            } else {
+                //es un data del nodo
+                insertSensorData(topic, value);
+                if (params.logs == 1) {
+                    console.log('Publish data sensor');
+                }
             }
-            notifyRegister(dataInfo);
-        }
-    });
-
-}
-
-/**
- * esta funcion se encarga de registrar la data
- */
-function insertSensorData(topic, value) {
-    console.log(topic+" : "+value);
-    console.log("*********************");
-
-    var dataInfo = {
-        name: topic.split("/")[1],
-        node: topic.split("/")[0],
-        intoDate: new Date(),
-        data: value.toString()
-    };
-
-    repository.insertDataSensor(dataInfo, function(err, result) {
-        if (!err) {
-            notifyData(dataInfo);
-        }
-    });
-}
-
-/**
- * esta funcion se encarga de notifica la data a los sockets
- */
-function notifyData(dataInfo) {
-    //pregunta si tiene sockets
-    if (Object.keys(globalSocket).length > 0) {
-        //consulta todos los sockets
-        for (var id in globalSocket) {
-            globalSocket[id].emit('pushData', dataInfo);
-            console.log("pushData ", dataInfo);
-        }
+        }); //observer
     }
-}
-/**
- * esta funcion se encarga de notifica el nuevo registro a los sockets
- */
-function notifyAllRegister() {
-    repository.getRegisterNodes(function(err, result) {
-        if (!err) {
-            for (index in result) {
-                 notifyRegister(result[index]);
-            }
+
+    /**
+     * esta funcion inserta un nuevo nodo y se suscribe al nodo registrado
+     * igualmente notifica el nuevo registro al socket
+     */
+    function insertNodeRegister(clientMQTT, topic, value) {
+        if (params.logs == 1) {
+            console.log(topic + " : " + value);
+            console.log("*********************");
         }
-    });
+        var sensors = value.toString();
 
-}
+        var dataInfo = {
+            name: topic.split("/")[1],
+            sensors: sensors.split(','),
+            intoDate: new Date()
+        };
 
-function notifyRegister(dataInto) {
-    //pregunta si tiene sockets
-    var skIndex = Object.keys(globalSocket).length;
-    console.log("Clientes conectados "+skIndex);
-    if (skIndex > 0) {
-        Object.keys(globalSocket).forEach(function(id) {
-            globalSocket[id].emit('setDataRegisters', dataInto);
+        repository.insertRegisterNode(dataInfo, function(err, result) {
+            if (!err) {
+                if (params.logs == 1) {
+                    console.log("unsubscribe " + topic);
+                }
+                clientMQTT.unsubscribe(topic);
+
+                //subscibe los sensores del nodo
+                for (key in dataInfo.sensors) {
+                    var sensor = dataInfo.sensors[key];
+                    if (params.logs == 1) {
+                        console.log("-- sensor subscribe : " + dataInfo.name + "/" + sensor);
+                    }
+                    clientMQTT.subscribe(dataInfo.name + "/" + sensor);
+                }
+                notifyRegister(dataInfo);
+            }
+        });
+
+    }
+
+    /**
+     * esta funcion se encarga de registrar la data
+     */
+    function insertSensorData(topic, value) {
+        if (params.logs == 1) {
+            console.log(topic + " : " + value);
+            console.log("*********************");
+        }
+
+        var dataInfo = {
+            name: topic.split("/")[1],
+            node: topic.split("/")[0],
+            intoDate: new Date(),
+            data: value.toString()
+        };
+
+        repository.insertDataSensor(dataInfo, function(err, result) {
+            if (!err) {
+                notifyData(dataInfo);
+            }
         });
     }
-}
+
+    /**
+     * esta funcion se encarga de notifica la data a los sockets
+     */
+    function notifyData(dataInfo) {
+        //pregunta si tiene sockets
+        if (Object.keys(globalSocket).length > 0) {
+            //consulta todos los sockets
+            for (var id in globalSocket) {
+                globalSocket[id].emit('pushData', dataInfo);
+                if (params.logs == 1) {
+                    console.log("pushData ", dataInfo);
+                }
+            }
+        }
+    }
+    /**
+     * esta funcion se encarga de notifica el nuevo registro a los sockets
+     */
+    function notifyAllRegister() {
+        repository.getRegisterNodes(function(err, result) {
+            if (!err) {
+                for (index in result) {
+                    notifyRegister(result[index]);
+                }
+            }
+        });
+
+    }
+
+    function notifyRegister(dataInto) {
+        //pregunta si tiene sockets
+        var skIndex = Object.keys(globalSocket).length;
+        if (params.logs == 1) {
+            console.log("Clientes conectados " + skIndex);
+        }
+        if (skIndex > 0) {
+            Object.keys(globalSocket).forEach(function(id) {
+                globalSocket[id].emit('setDataRegisters', dataInto);
+            });
+        }
+    }
+
+});

@@ -4,35 +4,18 @@ window.onload = function() {
         'packages': ['corechart']
     });
     google.charts.setOnLoadCallback(drawChart);
-    var lineOptions = [];
-
-
-    lineOptions['temperatura'] = {
-        label: "SENSOR DE TEMPERATURA",
-        dataDescription: "Valor de temperatura",
-        redGreaterThan: 32,
-        yellowGreaterThan: 25,
-    };
-
-    lineOptions['humedad'] = {
-        label: "SENDOR DE HUMEDAD",
-        dataDescription: "Valor de humedad",
-        redGreaterThan: 64,
-        yellowGreaterThan: 30,
-    };
-
-    lineOptions['calidad'] = {
-        label: "SENSOR DE CALIDAD DE AIRE",
-        dataDescription: "Valor de calidad de aire",
-        redGreaterThan: 100,
-        yellowGreaterThan: 24,
-    };
-
+  
 
     function drawChart() {
         var params = window.location.pathname.split("/");
         document.getElementById("node-name-title").innerHTML = params[2].toUpperCase();
-        $.get('http://' + document.domain + ':3300/rest/data/' + params[2], function(response) {
+        
+        var url = 'http://' + document.domain + ':3300/rest/data/' + params[2];
+        if(params[3]){
+            url = url + '/' + params[3];
+        }
+        
+        $.get(url, function(response) {
 
             var sensor = [];
 

@@ -10,19 +10,13 @@ block body
     ul(class="nav navbar-nav", id="menu-sensor") 
   .container
     .masthead
-      h3.text-muted Comportamientos para 
-        span(id="node-name-title")
-    div(class="panel panel-default")
-      div.panel-heading
-        h3.panel-title Análisis de datos
-      div.panel-body  
-        div(id="linechart_material", class="row")
+      h3.text-muted Consola #{subtitule}
+    div(id="content-console", class="row")
       
     // Site footer
     footer.footer
       p © github.com/raalzate 2016, Trabajo de Tesis para la <a href="https://www.unad.edu.co/">Universidad Nacional Abierta y a Distancia (UNAD) </a>, Programa de Ingeniería en Electrónica
 
 append scripts
-    script(src="https://www.gstatic.com/charts/loader.js")
-    script(src='/js/attributes.js')
-    script(src='/js/charts-node.js')
+    script(src='/socket.io/socket.io.js')
+    script(src='/js/console.js')

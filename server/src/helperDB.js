@@ -44,6 +44,18 @@ this.getDataSensors = function(nodo, resultCallback) {
     });
 };
 
+this.getDataBySensor = function(nodo, name, resultCallback) {
+    this.connect(function(status, db) {
+        if (status) {
+            var data = db.collection(COLL_SENSOR_DATA);
+            data.find({node:nodo, name: name, data:{ $ne: "nan" }}).toArray(function(err, result) {
+                resultCallback(err, result);
+                db.close();
+            });
+        }
+    });
+};
+
 this.insertRegisterNode = function(dataInto, resultCallback) {
     this.connect(function(status, db) {
         if (status) {

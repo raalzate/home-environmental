@@ -5,32 +5,10 @@ window.onload = function() {
     });
     google.charts.setOnLoadCallback(initAllCharts);
 
-    var renderSender = [];
     var dataInfo = [];
     var dataLineCore = [];
     var gaugeOptions = [];
 
-    var widgetTitle = {
-        "temperatura":"Temperatura en °C",
-        "humedad":"Humedad Ambiente",
-        "calidad": "Calidad del Aire",
-        "direccion":"Direccion del viento",
-        "anemometro":"Anemometro"
-    };
-    var widgets = {
-        "anemometro": function(id){wg_default(id, renderSender)},
-        "temperatura": function(id){wg_thermometer(id, renderSender)},
-        "humedad": function(id) {wg_humididy(id, renderSender)},
-        "calidad":function(id) {wg_quality(id, renderSender)},
-        "direccion":function(id) {wg_vane(id, renderSender)}
-    }
-    var lineCoreOptions = {
-        title: 'Sensores en tiempo real',
-        curveType: 'function',
-        legend: {
-            position: 'bottom'
-        }
-    };
 
     //esta funcion se encarga de inicializar los datos y los widget
     function setDataRegisters(objectRegister) {
@@ -226,7 +204,7 @@ window.onload = function() {
         html += '<span class="caret"></span></button>';
         html += '<ul role="menu" class="dropdown-menu">';
         html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="/charts/'+node+'/'+nameSensor+'">Ver Estadisticas</a></li>';
-        html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Deshabilitar Sensor</a></li>';
+        html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="/console/'+node+'/'+nameSensor+'">Ver Consola</a></li>';
         html += '</ul></div>';
         return html;
     }

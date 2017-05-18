@@ -3,3 +3,16 @@
     width: 50%;
     padding: 10px;
 }
+
+#content-console{
+  border: 1px solid gray;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: #efefef;
+
+  width: 600px; 
+  height: 500px; 
+  margin: 0 0 20px 0;
+  border: solid 1px #999; 
+  overflow-y: scroll;
+}
