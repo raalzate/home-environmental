@@ -13,7 +13,6 @@ var helperDB = function() {
                     callback(false, null);
                     console.log('Unable to connect to the mongoDB server. Error:', err);
                 } else {
-                    console.log('Connection established');
                     callback(true, db);
                 }
         });
