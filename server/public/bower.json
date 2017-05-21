@@ -1,0 +1,18 @@
+{
+  "name": "presentation ui",
+  "homepage": "https://github.com/raalzate/home-environmental",
+  "authors": [
+    "Raul .A Alzate <alzategomez.raul@gmail.com>"
+  ],
+  "description": "presnentacion de la estacion",
+  "main": "",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

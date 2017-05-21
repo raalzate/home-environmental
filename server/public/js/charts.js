@@ -1,13 +1,12 @@
 window.onload = function() {
 
     google.charts.load('current', {
-        'packages': ['gauge', 'corechart']
+        'packages': ['corechart']
     });
     google.charts.setOnLoadCallback(initAllCharts);
 
     var dataInfo = [];
     var dataLineCore = [];
-    var gaugeOptions = [];
 
 
     //esta funcion se encarga de inicializar los datos y los widget
