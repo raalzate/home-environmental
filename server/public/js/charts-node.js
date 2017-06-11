@@ -7,12 +7,14 @@ window.onload = function() {
   
 
     function drawChart() {
-        var params = window.location.pathname.split("/");
-        document.getElementById("node-name-title").innerHTML = params[2].toUpperCase();
+        var _node = getParameterByName("node");
+        var _sensor = getParameterByName("sensor");
+
+        document.getElementById("node-name-title").innerHTML = _node.toUpperCase();
         
-        var url = 'http://' + document.domain + ':3300/rest/data/' + params[2];
-        if(params[3]){
-            url = url + '/' + params[3];
+        var url = 'http://' + document.domain + ':3300/rest/data/' + _node;
+        if(_sensor){
+            url = url + '/' + _sensor;
         }
         
         $.get(url, function(response) {
@@ -105,6 +107,16 @@ window.onload = function() {
         }
 
         return null;
+    }
+
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
     }
 
 }

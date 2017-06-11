@@ -202,7 +202,7 @@ window.onload = function() {
         html += '<button type="button" data-toggle="dropdown" class="btn dropdown-toggle glyphicon glyphicon-cog"  style="margin-top: -8px;margin-right: -12px;padding: 4px;background-color: transparent;">';
         html += '<span class="caret"></span></button>';
         html += '<ul role="menu" class="dropdown-menu">';
-        html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="/charts/'+node+'/'+nameSensor+'">Ver Estadisticas</a></li>';
+        html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="/?node='+node+'&sensor='+nameSensor+'">Ver Estadisticas</a></li>';
         html += '<li role="presentation"><a role="menuitem" tabindex="-1" href="/console/'+node+'/'+nameSensor+'">Ver Consola</a></li>';
         html += '</ul></div>';
         return html;

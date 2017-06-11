@@ -50,8 +50,8 @@ prompt.get(['title', 'location', 'logs'], function(errParams, params) {
         repository.getRegisterNodes(function(err, result) {
             if (!err) {
                 for (index in result) {
-                    if (params.logs == 1) {
-                        console.log("subscribe los sensores del nodo" + result[index].name.toLowerCase());
+                    if (params.logs == 1 || params.logs == 'true') {
+                        console.log("@@ subscribe los sensores del nodo" + result[index].name.toLowerCase());
                     }
                     //subscibe los sensores del nodo
                     for (key in result[index].sensors) {
@@ -65,11 +65,19 @@ prompt.get(['title', 'location', 'logs'], function(errParams, params) {
 
 
     app.get('/', function(req, res) {
-        res.render("charts", {
-            title: params.title,
-            location: params.location
-        });
-        notifyAllRegister();
+        var queryParam = req.query;
+        if(Object.keys(queryParam).length == 0){
+            res.render("charts", {
+                        title: params.title,
+                        location: params.location
+                    });
+            notifyAllRegister();
+        } else {
+         res.render("charts-node", {
+            title: params.title
+          });
+        }
+        
     });
     app.get('/console', function(req, res) {
         res.render("console", {
@@ -87,17 +95,6 @@ prompt.get(['title', 'location', 'logs'], function(errParams, params) {
         res.render("console", {
             title: params.title,
             subtitule: req.params.node
-        });
-    });
-    app.get('/charts/:node', function(req, res) {
-        res.render("charts-node", {
-            title: params.title
-        });
-    });
-
-    app.get('/charts/:node/:sensor', function(req, res) {
-        res.render("charts-node", {
-            title: params.title
         });
     });
 
@@ -119,6 +116,7 @@ prompt.get(['title', 'location', 'logs'], function(errParams, params) {
     var io = require('socket.io').listen(app.listen(3300, function() { //listener
         console.log('Home Environmental app listening on port 3300!');
     }));
+    
     io.sockets.on('connection', function(socket) {
         globalSocket[socket.id] = socket; //set global socket
         if (params.logs == 1) {
