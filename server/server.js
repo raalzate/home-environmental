@@ -183,7 +183,7 @@ function insertNodeRegister(params, clientMQTT, topic, value) {
         intoDate: new Date()
     };
 
-    repository.insertRegisterNode(params, dataInfo, function(err, result) {
+    repository.insertRegisterNode(dataInfo, function(err, result) {
         if (!err) {
             if (params.logs == 1 || params.logs == 'true') {
                 console.log("@@ unsubscribe " + topic);
